@@ -1,0 +1,39 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  flex: 1;
+}
+
+.header {
+  background-color: #7c0a4d;
+  color: white;
+  padding: 35px 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.headerContent {
+  composes: container;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.main {
+  composes: container;
+}
+
+.logoutButton {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.logoutButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}

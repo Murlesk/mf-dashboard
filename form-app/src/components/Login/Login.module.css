@@ -1,0 +1,75 @@
+
+
+.formContainer {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-sizing: border-box;
+}
+
+.title {
+  margin-bottom: 20px;
+  text-align: center;
+  color: #7c0a4d;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+.button {
+  width: 100%;
+  padding: 12px;
+  background-color: #7c0a4d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin: 8px 0
+}
+
+.button:hover {
+  background-color:rgb(87, 6, 53);
+}
+
+.error {
+  color: #d32f2f;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.signupLink {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.signupLink a {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.signupLink a:hover {
+  text-decoration: underline;
+}
+
