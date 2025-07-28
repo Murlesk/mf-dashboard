@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { auth } from '../../firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext'; // Импортируем useAuth
 import styles from './Login.module.css';
 
 function Login() {
@@ -9,11 +8,12 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth(); // Получаем login из контекста
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await login(email, password); // Теперь login доступен
       navigate('/dashboard');
     } catch (err) {
       setError(err.message);
@@ -45,7 +45,9 @@ function Login() {
             required 
           />
         </div>
-        <button type="submit" className={styles.button}>Login</button>
+        <button type="submit" className={styles.button}>
+          Login
+        </button>
       </form>
     </div>
   );

@@ -1,41 +1,37 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { auth } from '../firebase';
-import { signOut } from "firebase/auth";
+import React, { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const logout = () => {
-  return signOut(auth);
+
+// В AuthContext.js
+const login = (email, password) => {
+  if (email === 'test@test.com' && password === '123456') {
+    setCurrentUser({ email });
+    return Promise.resolve();
+  }
+  return Promise.reject(new Error('Auth failed'));
 };
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      setCurrentUser(user);
-      setLoading(false);
-    });
-
-    return unsubscribe;
-  }, []);
+  const logout = () => {
+    setCurrentUser(null);
+    return Promise.resolve();
+  };
 
   const value = {
     currentUser,
+    login,
     logout
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  return useContext(AuthContext);
 }
