@@ -1,25 +1,12 @@
 {
   "name": "mf-dashboard",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"cd server && npm run dev\" \"cd form-app && npm start\"",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd server && npm run dev",
     "client": "cd form-app && npm start"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Murlesk/mf-dashboard.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Murlesk/mf-dashboard/issues"
-  },
-  "homepage": "https://github.com/Murlesk/mf-dashboard#readme",
-  "description": "",
   "devDependencies": {
-    "concurrently": "^9.2.0"
+    "concurrently": "^8.2.2"
   }
 }

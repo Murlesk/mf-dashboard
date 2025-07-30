@@ -13,12 +13,25 @@ async function login(req, res) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const user = result.recordset[0];
-    const token = jwt.sign(
-      { userId: user.Id, role: user.Role },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+const token = jwt.sign(
+  { 
+    userId: user.id,
+    username: user.username, // Добавьте это
+    email: user.email,
+    role: user.role 
+  },
+  process.env.JWT_SECRET,
+  { expiresIn: '1h' }
+);
+
+res.json({ 
+  token,
+  user: {
+    username: user.username,
+    email: user.email,
+    role: user.role
+  }
+});
 
     res.json({ token, role: user.Role });
   } catch (error) {

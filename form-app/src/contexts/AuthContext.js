@@ -28,12 +28,13 @@ const login = async (username, password) => {
     if (!response.ok) throw new Error('Ошибка входа');
 
     const data = await response.json();
-    
-    // Сохраняем токен в localStorage
     localStorage.setItem('token', data.token);
     
-    // Сохраняем данные пользователя в состоянии
-    setCurrentUser(data.user);
+    // Добавьте явное сохранение username
+    setCurrentUser({ 
+      username, // Сохраняем логин
+      ...data.user // И другие данные пользователя
+    });
 
   } catch (err) {
     console.error('Ошибка:', err);
@@ -44,18 +45,20 @@ const login = async (username, password) => {
   const logout = () => {
     localStorage.removeItem('token');
     setCurrentUser(null);
+    window.location.reload(true); 
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded = jwtDecode(token);
-      setCurrentUser({ 
-        email: decoded.email, 
-        role: decoded.role 
-      });
-    }
-  }, []);
+useEffect(() => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    const decoded = jwtDecode(token);
+    setCurrentUser({ 
+      username: decoded.username || decoded.sub, // Используем username или sub из токена
+      email: decoded.email, 
+      role: decoded.role 
+    });
+  }
+}, []);
 
   const value = {
     currentUser,

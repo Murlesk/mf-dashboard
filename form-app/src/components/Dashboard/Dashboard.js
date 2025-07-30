@@ -16,7 +16,7 @@ function Dashboard() {
   
   return (
     <div className={styles.dashboard}>
-      <h2 className={styles.welcome}>Welcome, {currentUser?.email}</h2>
+      <h2 className={styles.welcome}>Welcome, {currentUser?.username}</h2>
       <div className={styles.buttons}>
         
         <button className={styles.button} onClick={openSite1}>

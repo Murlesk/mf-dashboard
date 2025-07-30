@@ -26,9 +26,9 @@ function Login() {
       {error && <div className={styles.error}>{error}</div>}
       <form onSubmit={handleSubmit}>
         <div className={styles.formGroup}>
-          <label className={styles.label}>Email:</label>
+          <label className={styles.label}>Username:</label>
           <input 
-            type="email" 
+            type="text" 
             className={styles.input}
             value={email} 
             onChange={(e) => setEmail(e.target.value)} 
