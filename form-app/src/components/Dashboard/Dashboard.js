@@ -4,8 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import styles from './Dashboard.module.css';
 
 function Dashboard() {
-  const { currentUser, logout } = useAuth();
-  const navigate = useNavigate();
+  const { currentUser} = useAuth();
 
   const openSite1 = () => {
     window.open('https://mf-group.com', '_blank', 'noopener,noreferrer');
