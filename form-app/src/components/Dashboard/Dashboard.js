@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import styles from './Dashboard.module.css';
 
 function Dashboard() {
-  const { currentUser} = useAuth();
+  const { currentUser } = useAuth();
 
   const openSite1 = () => {
     window.open('https://mf-group.com', '_blank', 'noopener,noreferrer');
@@ -16,9 +16,10 @@ function Dashboard() {
   
   return (
     <div className={styles.dashboard}>
-      <h2 className={styles.welcome}>Welcome, {currentUser?.username}</h2>
+      <h2 className={styles.welcome}>
+        Добро пожаловать, {currentUser?.name || currentUser?.username}!
+      </h2>
       <div className={styles.buttons}>
-        
         <button className={styles.button} onClick={openSite1}>
           MF-Group
         </button>

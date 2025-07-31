@@ -6,9 +6,9 @@ const login = async (req, res) => {
   const { username, password } = req.body;
 
   try {
-    // 1. Поиск пользователя
+    // 1. Поиск пользователя без учета регистра
     const user = await db.query(
-      'SELECT user_id, username, password_hash, role FROM users WHERE username = $1',
+      'SELECT user_id, username, name, password_hash, role FROM users WHERE LOWER(username) = LOWER($1)',
       [username]
     );
 
@@ -22,9 +22,13 @@ const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // 3. Генерация токена
+    // 3. Генерация токена (добавляем name)
     const token = jwt.sign(
-      { userId: user.rows[0].user_id, role: user.rows[0].role },
+      { 
+        userId: user.rows[0].user_id, 
+        role: user.rows[0].role,
+        name: user.rows[0].name  // Добавляем имя в токен
+      },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
@@ -34,6 +38,7 @@ const login = async (req, res) => {
       user: {
         id: user.rows[0].user_id,
         username: user.rows[0].username,
+        name: user.rows[0].name,  // Добавляем имя в ответ
         role: user.rows[0].role
       }
     });

@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';
 
 const AuthContext = createContext();
 
@@ -9,72 +8,55 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true); // Добавляем состояние загрузки
+  const [loading, setLoading] = useState(true);
 
-  const login = async (username, password) => {
-    try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (!response.ok) throw new Error('Ошибка входа');
-
-      const data = await response.json();
-      localStorage.setItem('token', data.token);
-      setCurrentUser({ username, ...data.user });
-      setIsLoading(false);
-    } catch (err) {
-      console.error('Ошибка:', err);
-      throw err;
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    setCurrentUser(null);
-    window.location.reload(true); 
-  };
-
+  // При загрузке приложения проверяем, есть ли сохранённый пользователь
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setIsLoading(false);
-      return;
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setCurrentUser(JSON.parse(savedUser));
     }
-
-    try {
-      const decoded = jwtDecode(token);
-      
-      // Проверяем срок действия токена
-      if (decoded.exp * 1000 < Date.now()) {
-        throw new Error('Токен истёк');
-      }
-
-      setCurrentUser({
-        username: decoded.username,
-        email: decoded.email,
-        role: decoded.role
-      });
-    } catch (err) {
-      console.error('Ошибка проверки токена:', err);
-      localStorage.removeItem('token');
-    } finally {
-      setIsLoading(false);
-    }
+    setLoading(false);
   }, []);
+
+  async function login(username, password) {  // ✅ Изменил параметр на username
+    const response = await fetch('http://localhost:5000/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password }),  // ✅ Отправляем username
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Сохраняем токен и пользователя
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      setCurrentUser(data.user);
+      return { success: true };
+    } else {
+      return { success: false, message: data.message };
+    }
+  }
+
+  async function logout() {
+    // Удаляем данные из localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setCurrentUser(null);
+  }
 
   const value = {
     currentUser,
-    isLoading, // Добавляем в контекст
     login,
     logout
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 }
