@@ -30,7 +30,7 @@ const login = async (req, res) => {
         name: user.rows[0].name  // Добавляем имя в токен
       },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '7d' }
     );
 
     res.json({ 
