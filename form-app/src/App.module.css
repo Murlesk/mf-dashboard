@@ -37,3 +37,16 @@
 .logoutButton:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
+
+#root {
+  height: 100vh;
+}
+
+@media (max-width: 480px) {
+  .header {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 0.7em;
+  }
+
+}

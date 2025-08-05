@@ -1,20 +1,18 @@
-// server/middlewares/auth.js
 const jwt = require('jsonwebtoken');
 
-const authenticate = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-
+module.exports = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  
   if (!token) {
-    return res.status(401).json({ error: 'Токен отсутствует' });
+    return res.status(401).json({ message: 'Требуется авторизация' });
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // { userId, role }
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: 'Неверный токен' });
+    }
+    req.user = user;
     next();
-  } catch (err) {
-    res.status(401).json({ error: 'Недействительный токен' });
-  }
+  });
 };
-
-module.exports = authenticate;

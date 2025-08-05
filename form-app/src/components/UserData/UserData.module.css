@@ -1,0 +1,92 @@
+.userDataContainer {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.userDataContainer h3 {
+  margin-top: 0;
+
+  padding-bottom: 0.5rem;
+}
+
+/* ✅ Новый стиль для профиля пользователя */
+.userProfile {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.photoContainer {
+  flex-shrink: 0;
+}
+
+.userPhoto {
+  width: 100px;
+  /* height: 100px;
+  object-fit: cover; */
+  border-radius: 4px;
+  border: 2px solid rgb(122, 121, 121);
+}
+
+.userInfo {
+  flex: 1;
+}
+
+.userInfo p {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border-left: 3px solid rgb(122, 121, 121);
+}
+
+.rights h4 {
+  margin-top: 0;
+  color: #333;
+}
+
+.rights ul {
+  list-style: none;
+  padding: 0;
+}
+
+.rights li {
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+  background: white;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  border-left: 3px solid rgba(126, 5, 75, 0.51);
+}
+
+.loading, .error, .noData {
+  padding: 1rem;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.loading {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.error {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.noData {
+  background: #fff3cd;
+  color: #856404;
+}
+

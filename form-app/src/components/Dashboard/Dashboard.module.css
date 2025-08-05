@@ -17,6 +17,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;
+  margin-block-end: 20px;
 }
 
 .button {

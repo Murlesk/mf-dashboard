@@ -1,7 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken'); // ✅ Добавь это
 const authRoutes = require('./routes/authRoutes');
+const dashboardRoutes = require('./routes/dashboard');
 
 const app = express();
 
@@ -28,6 +30,7 @@ const authenticateToken = (req, res, next) => {
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Защищенный тестовый роут
 app.get('/api/protected', authenticateToken, (req, res) => {
