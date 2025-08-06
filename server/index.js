@@ -4,6 +4,7 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken'); // ✅ Добавь это
 const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboard');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 
@@ -31,6 +32,7 @@ const authenticateToken = (req, res, next) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Защищенный тестовый роут
 app.get('/api/protected', authenticateToken, (req, res) => {
