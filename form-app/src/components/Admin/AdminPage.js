@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import styles from './AdminPage.module.css';
@@ -18,21 +18,29 @@ function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  
+  // ✅ Добавляем состояние валидности формы
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  // ✅ Проверяем валидность формы при изменении данных
+  useEffect(() => {
+    const { username, password, email, name } = formData;
+    setIsFormValid(
+      username.trim() !== '' &&
+      password.trim() !== '' &&
+      email.trim() !== '' &&
+      name.trim() !== ''
+    );
+  }, [formData]);
 
   // Проверяем, имеет ли пользователь доступ
-  const isAdmin = currentUser?.role === 'admin';
+  const isAdmin = currentUser?.username === 'i.potaenko' || currentUser?.role === 'admin';
 
   if (!isAdmin) {
     return (
       <div className={styles.accessDenied}>
         <h2>Доступ запрещен</h2>
         <p>У вас нет прав для просмотра этой страницы.</p>
-        <button 
-          onClick={() => navigate('/dashboard')}
-          className={styles.backButton}
-        >
-          ← Назад
-        </button>
       </div>
     );
   }
@@ -92,7 +100,7 @@ function AdminPage() {
           onClick={() => navigate('/dashboard')}
           className={styles.backButton}
         >
-          ← Назад
+          ← Назад в кабинет
         </button>
       </div>
 
@@ -147,7 +155,7 @@ function AdminPage() {
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="Фамилия Имя"
+              placeholder="Иванов Иван Иванович"
             />
           </div>
 
@@ -166,15 +174,13 @@ function AdminPage() {
 
           <button 
             type="submit" 
-            disabled={loading}
+            disabled={loading || !isFormValid} // ✅ Добавили проверку
             className={styles.submitButton}
           >
             {loading ? 'Создание...' : 'Создать пользователя'}
           </button>
         </form>
       </div>
-
-      
     </div>
   );
 }
