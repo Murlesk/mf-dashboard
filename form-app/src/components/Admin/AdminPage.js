@@ -34,7 +34,7 @@ function AdminPage() {
   }, [formData]);
 
   // Проверяем, имеет ли пользователь доступ
-  const isAdmin = currentUser?.username === 'i.potaenko' || currentUser?.role === 'admin';
+  const isAdmin = currentUser?.role === 'admin';
 
   if (!isAdmin) {
     return (

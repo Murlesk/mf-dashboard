@@ -35,7 +35,7 @@ function AppContent() {
     <div className={styles.app}>
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <h1>MF-Group Dashboard</h1>
+          <a href="/dashboard"><h1>MF-Group Dashboard</h1></a>
           {currentUser && (
             <nav>
               <button onClick={handleLogout} className={styles.logoutButton}>
