@@ -155,7 +155,7 @@ function AdminPage() {
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="Иванов Иван Иванович"
+              placeholder="Фамилия Имя"
             />
           </div>
 
@@ -168,7 +168,7 @@ function AdminPage() {
             >
               <option value="user">Пользователь</option>
               <option value="admin">Администратор</option>
-              <option value="viewer">Наблюдатель</option>
+              <option value="manager">Менеджер</option>
             </select>
           </div>
 

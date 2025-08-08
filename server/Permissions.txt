@@ -1,0 +1,14 @@
+// 1. Добавляем в server\models\Permission.js
+const PERMISSIONS = {
+  // ... существующие
+  ACCESS_REPORTS: 'access_reports'
+};
+
+// 2. Добавляем в ROLE_PERMISSIONS
+'user': [..., PERMISSIONS.ACCESS_REPORTS],
+
+// 3. Защищаем новый endpoint
+router.get('/reports', checkPermission(PERMISSIONS.ACCESS_REPORTS), ...);
+
+// 4. Используем на фронтенде (только для UX)
+{hasPermission('access_reports') && <button>Отчеты</button>}
