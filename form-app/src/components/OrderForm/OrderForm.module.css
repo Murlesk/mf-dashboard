@@ -4,7 +4,6 @@
   align-items: center;
   min-height: 80vh;
   background-color: #f4f4f4;
-
 }
 
 .formContainer {
@@ -34,7 +33,6 @@
   margin: 0;
   color: #3f3f3f;
 }
-
 
 .backButton {
   padding: 0.5rem 1rem;
@@ -143,9 +141,8 @@
 .input.selectField {
   padding: 8px 2rem 8px 8px;
   appearance: none;
-  background: 
-    #f7f7f7 
-    url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") 
+  background: #f7f7f7
+    url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236c757d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e")
     no-repeat right 0.5rem center;
   background-size: 16px;
   cursor: pointer;
@@ -155,8 +152,6 @@
   margin-block-start: 5px;
   padding-left: 4px;
 }
-
-
 
 .sendButton {
   width: 100%;
@@ -181,7 +176,106 @@
   opacity: 0.6;
   border-color: #ccc;
 }
+/* ✅ Стили для модального окна успеха */
+.successOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
 
+.successModal {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-width: 400px;
+  width: 90%;
+  position: relative;
+}
+
+/* ✅ Обновленный стиль галочки - более угловатый */
+.successIcon {
+  width: 60px;
+  height: 60px;
+  background-color: #7c0a4d;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  position: relative;
+}
+
+/* Добавляем кастомную галочку с углами */
+.successIcon::before {
+  content: '';
+  position: absolute;
+  width: 25px;
+  height: 12px;
+  border-bottom: 3px solid white;
+  border-left: 3px solid white;
+  transform: rotate(-45deg);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.successModal h3 {
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.successModal p {
+  margin: 0 0 1rem 0;
+  color: #666;
+}
+
+.redirectText {
+  font-size: 0.9rem;
+  color: #999;
+  margin-top: 1rem;
+}
+
+.progressBar {
+  width: 100%;
+  height: 4px;
+  background-color: #e9ecef;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.progressFill {
+  width: 100%;
+  height: 100%;
+  background-color: #7c0a4d;
+  animation: progressAnimation 3s linear forwards;
+}
+
+@keyframes progressAnimation {
+  0% {
+    width: 100%;
+  }
+  100% {
+    width: 0%;
+  }
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .successModal {
+    padding: 1.5rem;
+    margin: 0 10px;
+  }
+}
 
 @media (width < 350px) {
   .toggleLabel {
@@ -191,7 +285,6 @@
 }
 
 @media (max-width: 768px) {
-
   .header {
     flex-direction: column;
     gap: 1rem;

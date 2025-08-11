@@ -1,23 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
-import styles from "./LeadForm.module.css";
+import { useAuth } from '../../contexts/AuthContext';
+import styles from './LeadForm.module.css';
+
+
+
 
 function LeadForm() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-
+  
   const [formData, setFormData] = useState({
-    toggle: "deal",
-    description: "",
-    client: "",
-    place: "",
-    eventName: "",
-    dateBegin: "",
-    dateEnd: "",
+    toggle: 'deal',
+    description: '',
+    client: '',
+    place: '',
+    eventName: '',
+    dateBegin: '',
+    dateEnd: ''
   });
 
-  // Состояние для валидации формы
+  const [dateError, setDateError] = useState("");
+
+  // Добавляем состояния для уведомления
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [loading, setLoading] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
 
   // Проверка авторизации
@@ -27,102 +35,156 @@ function LeadForm() {
     }
   }, [currentUser, navigate]);
 
-  // Проверка валидности формы
+  // Устанавливаем минимальную дату (сегодня) - внутри компонента!
   useEffect(() => {
-    const requiredFields = [
-      formData.description,
-      formData.client,
-      formData.place,
-      formData.dateBegin,
-      formData.dateEnd,
-    ];
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    const minDate = `${year}-${month}-${day}`;
 
-    const allRequiredFilled = requiredFields.every(
-      (field) => field.trim() !== ""
-    );
-    setIsFormValid(allRequiredFilled && formData.dateBegin <= formData.dateEnd);
-  }, [formData]);
-
-  // Устанавливаем минимальную дату окончания
-  useEffect(() => {
-    if (formData.dateBegin) {
-      setFormData((prev) => ({
-        ...prev,
-        dateEnd:
-          prev.dateEnd && prev.dateBegin <= prev.dateEnd
-            ? prev.dateEnd
-            : prev.dateBegin,
-      }));
-    }
-  }, [formData.dateBegin]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
     setFormData((prev) => ({
+      ...prev,
+      dateBegin: prev.dateBegin || minDate,
+      dateEnd: prev.dateEnd || minDate,
+    }));
+  }, []);
+
+// Проверка валидности формы
+useEffect(() => {
+  const requiredFields = [
+    formData.description,
+    formData.client,
+    formData.place,
+    formData.dateBegin,
+    formData.dateEnd
+  ];
+
+  const allRequiredFilled = requiredFields.every(field => field.trim() !== '');
+
+  // ✅ Проверка дат - дата окончания не может быть раньше даты начала
+  let isDateValid = true;
+  setDateError(""); // ✅ Сбрасываем ошибку
+  
+  if (formData.dateBegin && formData.dateEnd) {
+    const beginDate = new Date(formData.dateBegin);
+    const endDate = new Date(formData.dateEnd);
+    
+    if (endDate < beginDate) {
+      isDateValid = false;
+      setDateError("Дата окончания не может быть раньше даты начала"); //Устанавливаем ошибку
+    }
+  }
+
+  setIsFormValid(allRequiredFilled && isDateValid);
+}, [formData]);
+
+  // Таймер для автоматического закрытия уведомления
+  useEffect(() => {
+    if (showSuccess) {
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+        navigate("/dashboard"); // Переход на dashboard через 3 секунды
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccess, navigate]);
+
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  
+  // ✅ Автоматически устанавливаем дату окончания равной дате начала если она меньше
+  if (name === 'dateBegin' && formData.dateEnd && new Date(value) > new Date(formData.dateEnd)) {
+    setFormData(prev => ({
       ...prev,
       [name]: value,
+      dateEnd: value // Автоматически выравниваем дату окончания
     }));
-  };
-
-  const handleToggleChange = (value) => {
-    setFormData((prev) => ({
+  } else {
+    setFormData(prev => ({
       ...prev,
-      toggle: value,
+      [name]: value
     }));
-  };
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  if (!isFormValid) {
-    alert("Пожалуйста, заполните все обязательные поля корректно");
-    return;
-  }
-
-  try {
-    const token = localStorage.getItem("token");
-    
-       const response = await fetch('http://localhost:5000/api/lead/create-lead', {
-      method: "POST",
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        toggle: formData.toggle,
-        description: formData.description,
-        client: formData.client,
-        place: formData.place,
-        eventName: formData.eventName,
-        dateBegin: formData.dateBegin,
-        dateEnd: formData.dateEnd
-        // sender НЕ добавляем, т.к. его нет в форме
-      })
-    });
-
-    const responseData = await response.json();
-    
-    if (response.ok) {
-      alert("Заявка успешно создана!");
-      // Сброс формы
-      setFormData({
-        toggle: "deal",
-        description: "",
-        client: "",
-        place: "",
-        eventName: "",
-        dateBegin: "",
-        dateEnd: "",
-      });
-    } else {
-      console.error('Детали ошибки:', responseData);
-      alert(`Ошибка: ${responseData.message}\nДетали: ${responseData.details || 'Нет деталей'}`);
-    }
-  } catch (error) {
-    console.error('Ошибка сети:', error);
-    alert("Ошибка сети: " + error.message);
   }
 };
+
+  const handleToggleChange = (value) => {
+    setFormData(prev => ({
+      ...prev,
+      toggle: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!isFormValid) {
+      alert("Пожалуйста, заполните все обязательные поля корректно");
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch('http://localhost:5000/api/lead/create-lead', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          toggle: formData.toggle,
+          description: formData.description,
+          client: formData.client,
+          place: formData.place,
+          eventName: formData.eventName,
+          dateBegin: formData.dateBegin,
+          dateEnd: formData.dateEnd
+        })
+      });
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+        // ✅ Показываем реальный текст из ответа сервера
+        let messageToShow = "Заявка успешно создана"; // По умолчанию
+        
+        // Проверяем, что пришло в ответе от твоего сервера
+        if (responseData.details) {
+          // Если есть сообщение от 1С
+          messageToShow = responseData.details;
+        } else if (responseData.message) {
+          // Если сервер вернул своё сообщение
+          messageToShow = responseData.message;
+        }
+        
+        setSuccessMessage(messageToShow);
+        setShowSuccess(true);
+        
+        // ✅ Очищаем форму
+        setFormData({
+          toggle: 'deal',
+          description: '',
+          client: '',
+          place: '',
+          eventName: '',
+          dateBegin: '',
+          dateEnd: ''
+        });
+      } else {
+        console.error('Детали ошибки:', responseData);
+        alert(`Ошибка: ${responseData.message}\nДетали: ${responseData.details || 'Нет деталей'}`);
+      }
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Ошибка сети: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!currentUser) {
     return <div>Загрузка...</div>;
@@ -130,11 +192,26 @@ const handleSubmit = async (e) => {
 
   return (
     <div className={styles.container}>
+      {/* ✅ Модальное окно успеха */}
+      {showSuccess && (
+        <div className={styles.successOverlay}>
+          <div className={styles.successModal}>
+            <div className={styles.successIcon}></div>
+            <h3>Успешно!</h3>
+            <p>{successMessage}</p>
+            <div className={styles.progressBar}>
+              <div className={styles.progressFill}></div>
+            </div>
+            <p className={styles.redirectText}>Переход на главную через 3 секунды...</p>
+          </div>
+        </div>
+      )}
+
       <div className={styles.formContainer}>
         <div className={styles.header}>
           <h2>Создание заявки</h2>
-          <button
-            onClick={() => navigate("/dashboard")}
+          <button 
+            onClick={() => navigate('/dashboard')}
             className={styles.backButton}
           >
             ← Назад
@@ -149,32 +226,28 @@ const handleSubmit = async (e) => {
               name="toggle"
               id="deal"
               value="deal"
-              checked={formData.toggle === "deal"}
-              onChange={() => handleToggleChange("deal")}
+              checked={formData.toggle === 'deal'}
+              onChange={() => handleToggleChange('deal')}
               className={styles.toggleInput}
             />
-            <label
-              className={`${styles.toggleLabel} ${
-                formData.toggle === "deal" ? styles.active : ""
-              }`}
+            <label 
+              className={`${styles.toggleLabel} ${formData.toggle === 'deal' ? styles.active : ''}`}
               htmlFor="deal"
             >
               Обычная сделка
             </label>
-
+          
             <input
               type="radio"
               name="toggle"
               id="rent"
               value="rent"
-              checked={formData.toggle === "rent"}
-              onChange={() => handleToggleChange("rent")}
+              checked={formData.toggle === 'rent'}
+              onChange={() => handleToggleChange('rent')}
               className={styles.toggleInput}
             />
-            <label
-              className={`${styles.toggleLabel} ${
-                formData.toggle === "rent" ? styles.active : ""
-              }`}
+            <label 
+              className={`${styles.toggleLabel} ${formData.toggle === 'rent' ? styles.active : ''}`}
               htmlFor="rent"
             >
               Сухая аренда
@@ -183,9 +256,7 @@ const handleSubmit = async (e) => {
 
           {/* Поля ввода */}
           <div className={styles.inputField}>
-            <label className={styles.label} htmlFor="description">
-              Описание заявки: *
-            </label>
+            <label className={styles.label} htmlFor="description">Описание заявки: *</label>
             <input
               type="text"
               id="description"
@@ -196,11 +267,9 @@ const handleSubmit = async (e) => {
               className={styles.input}
             />
           </div>
-
+          
           <div className={styles.inputField}>
-            <label className={styles.label} htmlFor="client">
-              Клиент: *
-            </label>
+            <label className={styles.label} htmlFor="client">Клиент: *</label>
             <input
               type="text"
               id="client"
@@ -211,11 +280,9 @@ const handleSubmit = async (e) => {
               className={styles.input}
             />
           </div>
-
+          
           <div className={styles.inputField}>
-            <label className={styles.label} htmlFor="place">
-              Место проведения: *
-            </label>
+            <label className={styles.label} htmlFor="place">Место проведения: *</label>
             <input
               type="text"
               id="place"
@@ -226,11 +293,9 @@ const handleSubmit = async (e) => {
               className={styles.input}
             />
           </div>
-
+          
           <div className={styles.inputField}>
-            <label className={styles.label} htmlFor="eventName">
-              Название программы (опционально):
-            </label>
+            <label className={styles.label} htmlFor="eventName">Название программы (опционально):</label>
             <input
               type="text"
               id="eventName"
@@ -240,66 +305,57 @@ const handleSubmit = async (e) => {
               className={styles.input}
             />
           </div>
-
+      
           {/* Поля выбора даты */}
           <div className={styles.inputField}>
-            <label className={styles.label} htmlFor="dateBegin">
-              Дата начала: *
-            </label>
-            <input
-              type="date"
-              id="dateBegin"
-              name="dateBegin"
-              value={formData.dateBegin}
-              onChange={handleChange}
-              required
-              className={styles.input}
-            />
-          </div>
-
+  <label className={styles.label} htmlFor="dateBegin">Дата начала: *</label>
+  <input
+    type="date"
+    id="dateBegin"
+    name="dateBegin"
+    value={formData.dateBegin}
+    onChange={handleChange}
+    required
+    className={styles.input}
+    min={new Date().toISOString().split('T')[0]} // Минимум - сегодня
+  />
+</div>
+          
           <div className={styles.inputField}>
-            <label className={styles.label} htmlFor="dateEnd">
-              Дата окончания: *
-            </label>
-            <input
-              type="date"
-              id="dateEnd"
-              name="dateEnd"
-              value={formData.dateEnd}
-              onChange={handleChange}
-              min={formData.dateBegin}
-              required
-              className={styles.input}
-              style={{
-                borderColor:
-                  formData.dateBegin &&
-                  formData.dateEnd &&
-                  formData.dateBegin > formData.dateEnd
-                    ? "#dc3545"
-                    : "",
-              }}
-            />
-            {formData.dateBegin &&
-              formData.dateEnd &&
-              formData.dateBegin > formData.dateEnd && (
-                <div
-                  style={{
-                    color: "#dc3545",
-                    fontSize: "0.8rem",
-                    marginTop: "5px",
-                  }}
-                >
-                  Дата окончания не может быть раньше даты начала
-                </div>
-              )}
-          </div>
+  <label className={styles.label} htmlFor="dateEnd">Дата окончания: *</label>
+  <input
+    type="date"
+    id="dateEnd"
+    name="dateEnd"
+    value={formData.dateEnd}
+    onChange={handleChange}
+    required
+    className={styles.input}
+    min={formData.dateBegin || new Date().toISOString().split('T')[0]} // Минимум - дата начала или сегодня
+    style={{
+      borderColor: dateError ? "#dc3545" : "" // ✅ Красная рамка при ошибке
+    }}
+  />
+  {/* ✅ Отображаем сообщение об ошибке */}
+  {dateError && (
+    <div
+      style={{
+        color: "#dc3545",
+        fontSize: "0.8rem",
+        marginTop: "5px",
+      }}
+    >
+      {dateError}
+    </div>
+  )}
+</div>
 
-          <button
-            type="submit"
+          <button 
+            type="submit" 
             className={styles.sendButton}
-            disabled={!isFormValid}
+            disabled={!isFormValid || loading}
           >
-            Создать программу
+            {loading ? 'Создание...' : 'Создать программу'}
           </button>
         </form>
       </div>

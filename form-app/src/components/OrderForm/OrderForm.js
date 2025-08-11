@@ -20,10 +20,17 @@ function OrderForm() {
     comment: "",
   });
 
+  // Добавляем состояние для ошибки дат
+  const [dateError, setDateError] = useState("");
+
   const [dataGroup1, setDataGroup1] = useState([]);
   const [dataGroup2, setDataGroup2] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isFormValid, setIsFormValid] = useState(false);
+
+  // ✅ Добавляем состояния для уведомления
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   // Проверка авторизации
   useEffect(() => {
@@ -32,28 +39,42 @@ function OrderForm() {
     }
   }, [currentUser, navigate]);
 
-  // Проверка валидности формы
-  useEffect(() => {
-    const requiredFields = [
-      formData.customer,
-      formData.date,
-      formData.dateFrom,
-      formData.region,
-      formData.address1,
-      formData.weight,
-    ];
+// Проверка валидности формы
+useEffect(() => {
+  const requiredFields = [
+    formData.customer,
+    formData.date,
+    formData.dateFrom,
+    formData.region,
+    formData.address1,
+    formData.weight,
+  ];
 
-    const allRequiredFilled = requiredFields.every(
-      (field) =>
-        field !== null && field !== undefined && field.toString().trim() !== ""
-    );
+  const allRequiredFilled = requiredFields.every(
+    (field) =>
+      field !== null && field !== undefined && field.toString().trim() !== ""
+  );
 
-    // Проверка, что вес является числом больше 0
-    const isWeightValid =
-      formData.weight && !isNaN(formData.weight) && Number(formData.weight) > 0;
+  // Проверка, что вес является числом больше 0
+  const isWeightValid =
+    formData.weight && !isNaN(formData.weight) && Number(formData.weight) > 0;
 
-    setIsFormValid(allRequiredFilled && isWeightValid);
-  }, [formData]);
+  // ✅ Проверка дат - дата возврата не может быть меньше даты поездки
+  let isDateValid = true;
+  setDateError(""); // ✅ Сбрасываем ошибку
+  
+  if (formData.date && formData.dateFrom) {
+    const pickupDate = new Date(formData.date);
+    const returnDate = new Date(formData.dateFrom);
+    
+    if (returnDate < pickupDate) {
+      isDateValid = false;
+      setDateError("Дата возврата не может быть раньше даты поездки"); // ✅ Устанавливаем ошибку
+    }
+  }
+
+  setIsFormValid(allRequiredFilled && isWeightValid && isDateValid);
+}, [formData]);
 
   // Загрузка данных для селектов
   useEffect(() => {
@@ -84,7 +105,6 @@ function OrderForm() {
         setDataGroup1(group1);
         setDataGroup2(group2);
 
-        // Устанавливаем первый элемент как значение по умолчанию
         if (group1.length > 0) {
           setFormData((prev) => ({
             ...prev,
@@ -112,7 +132,7 @@ function OrderForm() {
     }
   }, [formData.organization, dataGroup1, dataGroup2]);
 
-  // Устанавливаем минимальную дату и время
+  // Устанавливаем минимальную дату и время (сегодня)
   useEffect(() => {
     const now = new Date();
     const year = now.getFullYear();
@@ -125,15 +145,42 @@ function OrderForm() {
     setFormData((prev) => ({
       ...prev,
       date: prev.date || minDateTime,
+      dateFrom: prev.dateFrom || minDateTime, // Устанавливаем обе даты
     }));
   }, []);
 
+  // Таймер для автоматического закрытия уведомления
+  useEffect(() => {
+    if (showSuccess) {
+      const timer = setTimeout(() => {
+        setShowSuccess(false);
+        navigate("/dashboard"); // Переход на dashboard через 3 секунды
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccess, navigate]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    // Для даты поездки автоматически обновляем дату возврата если она меньше
+    if (
+      name === "date" &&
+      formData.dateFrom &&
+      new Date(value) > new Date(formData.dateFrom)
+    ) {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        dateFrom: value, // Автоматически выравниваем дату возврата
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleOrganizationChange = (value) => {
@@ -144,50 +191,84 @@ function OrderForm() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  if (!isFormValid) {
-    alert("Пожалуйста, заполните все обязательные поля корректно");
-    return;
-  }
+    e.preventDefault();
 
-  try {
-    const token = localStorage.getItem("token");
-    
-    const response = await fetch('http://localhost:5000/api/order/create-order', {
-      method: "POST",
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        organization: formData.organization,
-        customer: formData.customer,
-        date: formData.date,
-        dateFrom: formData.dateFrom,
-        region: formData.region,
-        address1: formData.address1,
-        address2: formData.address2,
-        goods: formData.goods,
-        weight: formData.weight,
-        comment: formData.comment
-      })
-    });
-
-    const responseData = await response.json();
-    
-    if (response.ok) {
-      alert("Заказ успешно создан!");
-    } else {
-      // ✅ Покажем детали ошибки
-      console.error('Детали ошибки:', responseData);
-      alert(`Ошибка: ${responseData.message}\nДетали: ${responseData.details || 'Нет деталей'}`);
+    if (!isFormValid) {
+      alert("Пожалуйста, заполните все обязательные поля корректно");
+      return;
     }
-  } catch (error) {
-    console.error('Ошибка сети:', error);
-    alert("Ошибка сети: " + error.message);
-  }
-};
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        "http://localhost:5000/api/order/create-order",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            organization: formData.organization,
+            customer: formData.customer,
+            date: formData.date,
+            dateFrom: formData.dateFrom,
+            region: formData.region,
+            address1: formData.address1,
+            address2: formData.address2,
+            goods: formData.goods,
+            weight: formData.weight,
+            comment: formData.comment,
+          }),
+        }
+      );
+
+      const responseData = await response.json();
+
+      if (response.ok) {
+        // Показываем реальный текст из ответа сервера
+        let messageToShow = "Заявка успешно создана"; // По умолчанию
+
+        // Проверяем, что пришло в ответе от твоего сервера
+        if (responseData.details) {
+          // Если есть сообщение от 1С
+          messageToShow = responseData.details;
+        } else if (responseData.message) {
+          // Если сервер вернул своё сообщение
+          messageToShow = responseData.message;
+        }
+
+        setSuccessMessage(messageToShow);
+        setShowSuccess(true);
+
+        // Очищаем форму
+        setFormData({
+          organization: "МодифиК",
+          customer:
+            dataGroup1.length > 0 ? dataGroup1[0].name || dataGroup1[0] : "",
+          date: formData.date,
+          dateFrom: "",
+          region: "",
+          address1: "",
+          address2: "",
+          goods: "Сценическое оборудование",
+          weight: "",
+          comment: "",
+        });
+      } else {
+        console.error("Детали ошибки:", responseData);
+        alert(
+          `Ошибка: ${responseData.message}\nДетали: ${
+            responseData.details || "Нет деталей"
+          }`
+        );
+      }
+    } catch (error) {
+      console.error("Ошибка сети:", error);
+      alert("Ошибка сети: " + error.message);
+    }
+  };
 
   // Получаем данные для текущего селекта
   const getCurrentSelectData = () => {
@@ -204,6 +285,23 @@ function OrderForm() {
 
   return (
     <div className={styles.container}>
+      {/* ✅ Модальное окно успеха */}
+      {showSuccess && (
+        <div className={styles.successOverlay}>
+          <div className={styles.successModal}>
+            <div className={styles.successIcon}></div>
+            <h3>Успешно!</h3>
+            <p>{successMessage}</p>
+            <div className={styles.progressBar}>
+              <div className={styles.progressFill}></div>
+            </div>
+            <p className={styles.redirectText}>
+              Переход на главную через 3 секунды...
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className={styles.formContainer}>
         <div className={styles.header}>
           <h2>Заказ автомобиля</h2>
@@ -277,34 +375,51 @@ function OrderForm() {
           </div>
 
           <div className={styles.inputField}>
-            <label className={styles.label} htmlFor="date">
-              Дата и время поездки: *
-            </label>
-            <input
-              type="datetime-local"
-              id="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className={styles.input}
-              required
-            />
-          </div>
+  <label className={styles.label} htmlFor="date">
+    Дата и время поездки: *
+  </label>
+  <input
+    type="datetime-local"
+    id="date"
+    name="date"
+    value={formData.date}
+    onChange={handleChange}
+    className={styles.input}
+    required
+    min={new Date().toISOString().slice(0, 16)} // Минимум - сегодня
+  />
+</div>
 
           <div className={styles.inputField}>
-            <label className={styles.label} htmlFor="dateFrom">
-              Дата и время возврата: *
-            </label>
-            <input
-              type="datetime-local"
-              id="dateFrom"
-              name="dateFrom"
-              value={formData.dateFrom}
-              onChange={handleChange}
-              className={styles.input}
-              required
-            />
-          </div>
+  <label className={styles.label} htmlFor="dateFrom">
+    Дата и время возврата: *
+  </label>
+  <input
+    type="datetime-local"
+    id="dateFrom"
+    name="dateFrom"
+    value={formData.dateFrom}
+    onChange={handleChange}
+    className={styles.input}
+    required
+    min={formData.date || new Date().toISOString().slice(0, 16)} // Минимум - дата поездки или сегодня
+    style={{
+      borderColor: dateError ? "#dc3545" : "" // ✅ Красная рамка при ошибке
+    }}
+  />
+  {/* ✅ Отображаем сообщение об ошибке */}
+  {dateError && (
+    <div
+      style={{
+        color: "#dc3545",
+        fontSize: "0.8rem",
+        marginTop: "5px",
+      }}
+    >
+      {dateError}
+    </div>
+  )}
+</div>
 
           {/* Поля ввода */}
           <div className={styles.inputField}>
@@ -426,7 +541,7 @@ function OrderForm() {
           <button
             type="submit"
             className={styles.sendButton}
-            disabled={!isFormValid} 
+            disabled={!isFormValid}
           >
             Заказать машину
           </button>

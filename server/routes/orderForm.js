@@ -10,8 +10,12 @@ router.post(
   checkPermission(PERMISSIONS.ACCESS_ORDER_FORM),
   async (req, res) => {
     try {
+      const authHeader = req.headers['authorization'];
+      const token = authHeader?.split(' ')[1];
+      
       const dataToSend = req.body;
 
+      console.log("=== Отправляем заказ в 1С ===");
       console.log(JSON.stringify(dataToSend, null, 2));
 
       const response = await fetch(
@@ -20,6 +24,7 @@ router.post(
           method: "POST",
           headers: {
             "Content-Type": "application/json; charset=utf-8",
+            "Authorization": token // Без Bearer
           },
           body: JSON.stringify(dataToSend),
         }
@@ -28,16 +33,39 @@ router.post(
       console.log("Статус ответа от 1С:", response.status);
 
       if (response.ok) {
-        const successData = await response.json();
+        // ✅ Проверяем Content-Type ответа
+        const contentType = response.headers.get('content-type');
+        
+        let successData;
+        if (contentType && contentType.includes('application/json')) {
+          // Если ответ JSON
+          successData = await response.json();
+        } else {
+          // Если ответ текст
+          successData = await response.text();
+        }
+        
         console.log("Успешный ответ:", successData);
-        res.json({ message: "Заказ создан", data: successData });
+        res.json({ 
+          message: "Заказ успешно создан", 
+          details: successData 
+        });
       } else {
-        const errorText = await response.text();
-        console.error("Ошибка от внешнего сервера:", errorText);
+        // ✅ Обрабатываем ошибку правильно
+        const contentType = response.headers.get('content-type');
+        let errorDetails;
+        
+        if (contentType && contentType.includes('application/json')) {
+          errorDetails = await response.json();
+        } else {
+          errorDetails = await response.text();
+        }
+        
+        console.error("Ошибка от внешнего сервера:", errorDetails);
         res.status(response.status).json({
           message: "Ошибка создания заказа",
           status: response.status,
-          details: errorText,
+          details: errorDetails,
         });
       }
     } catch (error) {
