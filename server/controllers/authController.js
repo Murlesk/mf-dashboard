@@ -1,6 +1,32 @@
 const db = require('../db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { query } = require('../db');
+
+exports.login = async (req, res) => {
+  const { username, password } = req.body;
+
+  console.log('=== Попытка входа ===');
+  console.log('Полученные данные:', req.body);
+
+  try {
+    const result = await query(
+      'SELECT * FROM users WHERE username = $1 AND password = $2',
+      [username, password]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Неверные учетные данные' });
+    }
+
+    const user = result.rows[0];
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+    res.json({ message: 'Успешный вход', token });
+  } catch (error) {
+    console.error('Ошибка при входе:', error.message);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+};
 
 const login = async (req, res) => {
   const { username, password } = req.body;

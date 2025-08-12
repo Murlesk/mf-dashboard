@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode'; // ✅ Правильный импорт
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode"; // ✅ Правильный импорт
 
 const AuthContext = createContext();
 
@@ -14,26 +14,26 @@ export function AuthProvider({ children }) {
   // Проверяем токен при загрузке
   useEffect(() => {
     const checkTokenValidity = () => {
-      const token = localStorage.getItem('token');
-      const savedUser = localStorage.getItem('user');
-      
+      const token = localStorage.getItem("token");
+      const savedUser = localStorage.getItem("user");
+
       if (token && savedUser) {
         try {
           const decoded = jwtDecode(token);
           const currentTime = Date.now() / 1000;
-          
+
           // Если токен еще действует
           if (decoded.exp > currentTime) {
             setCurrentUser(JSON.parse(savedUser));
           } else {
             // Токен просрочен - удаляем данные
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
           }
         } catch (err) {
           // Невалидный токен
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
         }
       }
       setLoading(false);
@@ -43,10 +43,10 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function login(username, password) {
-    const response = await fetch('http://localhost:5000/api/auth/login', {
-      method: 'POST',
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ username, password }),
     });
@@ -54,8 +54,8 @@ export function AuthProvider({ children }) {
     const data = await response.json();
 
     if (response.ok) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
       setCurrentUser(data.user);
       return { success: true };
     } else {
@@ -64,15 +64,15 @@ export function AuthProvider({ children }) {
   }
 
   async function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setCurrentUser(null);
   }
 
   const value = {
     currentUser,
     login,
-    logout
+    logout,
   };
 
   return (

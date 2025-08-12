@@ -129,7 +129,7 @@ const handleChange = (e) => {
     try {
       const token = localStorage.getItem('token');
       
-      const response = await fetch('http://localhost:5000/api/lead/create-lead', {
+      const response = await fetch('/api/lead/create-lead', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

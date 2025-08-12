@@ -8,7 +8,7 @@ export const usePermissions = () => {
     const fetchPermissions = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/api/user/permissions', {
+        const response = await fetch('/api/user/permissions', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
