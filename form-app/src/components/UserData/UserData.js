@@ -16,7 +16,7 @@ function UserData() {
           return;
         }
 
-        const response = await fetch('/api/dashboard/test-data', {
+        const response = await fetch('http://localhost:5000/api/dashboard/test-data', {
           headers: {
             'Authorization': `Bearer ${token}`,
           },

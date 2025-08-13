@@ -17,7 +17,7 @@ function OrderForm() {
     address2: "",
     goods: "Сценическое оборудование",
     weight: "",
-    comment: "",
+    comment: "#%#",
   });
 
   // Добавляем состояние для ошибки дат
@@ -202,7 +202,7 @@ useEffect(() => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "/api/order/create-order",
+        "http://localhost:5000/api/order/create-order",
         {
           method: "POST",
           headers: {
