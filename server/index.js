@@ -9,6 +9,7 @@ const adminRoutes = require('./routes/admin');
 const leadFormRoutes = require('./routes/leadForm');
 const orderFormRoutes = require('./routes/orderForm');
 const userRoutes = require('./routes/user');
+const eventsRoutes = require('./routes/events');
 
 const app = express();
 
@@ -70,6 +71,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/lead', leadFormRoutes);
 app.use('/api/order', orderFormRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/events', eventsRoutes);
 
 // Защищенный тестовый роут
 app.get('/api/protected', authenticateToken, (req, res) => {

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { usePermissions } from '../../hooks/usePermissions';
 import UserData from '../UserData/UserData';
+import EventsList from '../EventsList/EventsList';
 import styles from './Dashboard.module.css';
 
 function Dashboard() {
@@ -43,6 +44,7 @@ function Dashboard() {
       </div>
       
       <UserData />
+      <EventsList />
     </div>
   );
 }

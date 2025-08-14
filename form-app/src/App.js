@@ -88,7 +88,7 @@ function AppContent() {
           <Route
             path="/lead-form"
             element={
-              <RoleProtectedRoute allowedRoles={["admin", "user"]}>
+              <RoleProtectedRoute allowedRoles={["admin", "user", "manager"]}>
                 <LeadForm />
               </RoleProtectedRoute>
             }

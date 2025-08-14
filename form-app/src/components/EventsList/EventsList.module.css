@@ -1,0 +1,426 @@
+.eventsContainer {
+  width: 100%;
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #333;
+  border-bottom: 2px solid #7c0a4d;
+  padding-bottom: 0.5rem;
+}
+
+.section {
+  margin-bottom: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.sectionHeader {
+  background: #e9ecef;
+  padding: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.sectionHeader:hover {
+  background: #dde0e3;
+}
+
+.sectionHeader h4 {
+  margin: 0;
+  color: #495057;
+}
+
+.arrow {
+  font-size: 1.2rem;
+  color: #6c757d;
+}
+
+.eventsList {
+  padding: 1rem;
+  background: white;
+}
+
+.eventCard {
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  background: #fff;
+}
+
+.eventCard:last-child {
+  margin-bottom: 0;
+}
+
+.eventCard h5 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.eventCard p {
+  margin: 0.25rem 0;
+  color: #666;
+}
+
+.noEvents {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 1rem;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+.loading {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.error {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+
+.searchContainer {
+  position: relative;
+  width: 100%;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  background: white;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.clearSearch {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0.25rem;
+  border-radius: 3px;
+}
+
+.clearSearch:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.searchResults {
+  background: #d1ecf1;
+  color: #0c5460;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.searchResults {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
+  color: #1565c0;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  border: 1px solid #bbdefb;
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.1);
+}
+
+.searchResults strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: #0d47a1;
+}
+
+.resultCount {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.resultCount span {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.pastCount {
+  background: #ffcdd2;
+  color: #c62828;
+}
+
+.currentCount {
+  background: #fff9c4;
+  color: #f57f17;
+}
+
+.futureCount {
+  background: #c8e6c9;
+  color: #2e7d32;
+}
+
+.searchPanel {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.searchContainer {
+  position: relative;
+  flex: 1;
+  min-width: 250px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  background: white;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.clearSearch {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0.25rem;
+  border-radius: 3px;
+}
+
+.clearSearch:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+/* ✅ Стили для кнопки фильтра по задолженности */
+.debtFilterButton {
+  padding: 0.75rem 1rem;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.debtFilterButton:hover {
+  background: #5a6268;
+}
+
+.debtFilterButton.active {
+  background-color: #7c0a4d;
+  color: white;
+}
+
+/* ✅ Стили для статистики поиска */
+.searchStats {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  border: 1px solid rgba(155, 150, 150, 0.42);
+  box-shadow: 0 2px 4px rgba(92, 92, 92, 0.33);
+  width: fit-content;
+}
+
+.searchStats strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color:inherit;
+  
+}
+
+.statsNumbers {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  
+}
+
+.statsNumbers span {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.pastStat {
+  background: #ffcdd2;
+  color: #c62828;
+}
+
+.currentStat {
+  background:rgb(247, 237, 152);
+  color: #f57f17;
+}
+
+.futureStat {
+  background:rgb(157, 241, 160);
+  color: #2e7d32;
+}
+
+/* ✅ Стили для задолженности */
+.debtBadge {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin: 0.5rem 0;
+  font-weight: bold;
+  border: 1px solid #f5c6cb;
+}
+
+.eventName {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .searchPanel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .searchContainer {
+    min-width: auto;
+  }
+  
+  .debtFilterButton {
+    padding: 0.75rem;
+  }
+  
+  .statsNumbers {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .statsNumbers span {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+  .searchResults {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .searchResults strong {
+    font-size: 1rem;
+  }
+  
+  .resultCount {
+    gap: 0.5rem;
+    flex-direction: column;
+  }
+  
+  .resultCount span {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .searchResults {
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .searchResults strong {
+    font-size: 0.95rem;
+  }
+  
+  .resultCount span {
+    font-size: 0.8rem;
+  }
+.searchStats {
+  width: 100%;
+}
+
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .eventsContainer {
+    padding: 0.5rem;
+  }
+  
+  .sectionHeader {
+    padding: 0.75rem;
+  }
+  
+  .eventsList {
+    padding: 0.75rem;
+  }
+  
+  .eventCard {
+    padding: 0.75rem;
+  }
+
+  .searchInput {
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    font-size: 0.9rem;
+  }
+  
+  .searchResults {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+}

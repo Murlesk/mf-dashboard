@@ -91,3 +91,10 @@
   color: #856404;
 }
 
+/* Адаптивность */
+@media (max-width: 480px) {
+  .userProfile {
+  flex-direction: column;
+}
+}
+

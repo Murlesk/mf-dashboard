@@ -11,7 +11,12 @@ const checkPermission = (requiredPermission) => {
     const userPermissions = ROLE_PERMISSIONS[userRole] || [];
     
     if (!userPermissions.includes(requiredPermission)) {
-      return res.status(403).json({ message: 'Недостаточно прав' });
+      return res.status(403).json({ 
+        message: 'Недостаточно прав',
+        required: requiredPermission,
+        userRole: userRole,
+        userPermissions: userPermissions
+      });
     }
 
     next();

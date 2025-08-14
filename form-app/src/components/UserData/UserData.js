@@ -65,7 +65,7 @@ function UserData() {
         </div>
       </div>
 
-      <div className={styles.rights}>
+      {/* <div className={styles.rights}>
         <h4>Права доступа:</h4>
         <ul>
           <li><strong>Новый лид:</strong> {userData.rights.newLead ? '✅ Да' : '❌ Нет'}</li>
@@ -76,7 +76,7 @@ function UserData() {
           <li><strong>Сборка отгрузки:</strong> {userData.rights.assemblyShipment ? '✅ Да' : '❌ Нет'}</li>
           <li><strong>Водитель:</strong> {userData.rights.driver ? '✅ Да' : '❌ Нет'}</li>
         </ul>
-      </div>
+      </div> */}
     </div>
   );
 }
