@@ -286,7 +286,6 @@
 
 @media (max-width: 768px) {
   .header {
-    flex-direction: column;
     gap: 1rem;
     text-align: center;
   }
@@ -295,5 +294,11 @@
     flex-direction: column;
     gap: 5px;
     margin-bottom: 0;
+  }
+}
+
+@media (width < 420px) {
+  .backButton {
+    margin-top: 0px;
   }
 }
