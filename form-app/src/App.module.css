@@ -11,7 +11,7 @@ a {
 }
 
 .header {
-  background-color: #7c0a4d;
+  background-color: var(--primary-color);
   color: white;
   padding: 35px 0;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);

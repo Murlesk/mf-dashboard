@@ -58,7 +58,7 @@
 .loginButton {
   width: 100%;
   padding: 0.75rem;
-  background: #7c0a4d;
+  background: var(--primary-color);
   color: white;
   border: none;
   border-radius: 4px;
@@ -69,7 +69,7 @@
 }
 
 .loginButton:hover:not(:disabled) {
-  background:rgb(92, 8, 57);
+  background:var(--primary-hover)
 }
 
 .loginButton:disabled {

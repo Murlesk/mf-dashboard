@@ -105,7 +105,7 @@
 }
 
 .toggleLabel.active {
-  background: #7c0a4d; /* --btn-color */
+  background: var(--primary-color); /* --btn-color */
   color: white;
 }
 
@@ -136,7 +136,7 @@
   width: 100%;
   padding: 10px;
   margin-top: 15px;
-  background-color: #7c0a4d; /* --btn-color */
+  background-color: var(--primary-color); /* --btn-color */
   color: white;
   border: 1px solid #ccc; /* --toogle-border */
   border-radius: 5px;
@@ -185,7 +185,7 @@
 .successIcon {
   width: 60px;
   height: 60px;
-  background-color: #7c0a4d;
+  background-color: var(--primary-color);
   border-radius: 8px; /* Меньший радиус для скругления углов */
   display: flex;
   align-items: center;
@@ -235,7 +235,7 @@
 .progressFill {
   width: 100%;
   height: 100%;
-  background-color: #7c0a4d;
+  background-color: var(--primary-color);
   animation: progressAnimation 3s linear forwards;
 }
 
