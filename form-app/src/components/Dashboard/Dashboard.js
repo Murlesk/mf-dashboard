@@ -34,6 +34,7 @@ function Dashboard() {
           <button className={styles.button} onClick={openSite1}>
             Создать лид
           </button>
+          
         )}
         
         {hasPermission('access_order_form') && (

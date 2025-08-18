@@ -1,7 +1,6 @@
 .eventDetailsContainer {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
   padding: 20px;
   background-color: #f4f4f4;
   min-height: 80vh;
@@ -38,8 +37,9 @@
 
 .content {
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
   flex-wrap: wrap;
+  margin-bottom: 1rem;
 }
 
 /* ✅ Левая панель */
@@ -48,7 +48,7 @@
   min-width: 300px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 /* ✅ Карточка мероприятия */
@@ -119,13 +119,12 @@
   padding: 0.5rem;
   background: #f8f9fa;
   border-radius: 4px;
-  border-left: 3px solid #28a745;
+  border-left: 3px solid var(--primary-color);
 }
 
 /* ✅ Фотографии машины */
 .carPhotos {
   grid-column: 1 / -1;
-
 }
 
 .carPhotos h4 {
@@ -160,7 +159,8 @@
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border: 1px solid #e9ecef;
-  height: fit-content;
+  /* height: fit-content; */
+  height: 100%;
 }
 
 .carsContainer h3 {
@@ -169,6 +169,7 @@
   color: #333;
   border-bottom: 1px solid #dee2e6;
   padding-bottom: 0.5rem;
+  
 }
 
 /* ✅ Список машин */
@@ -216,7 +217,6 @@
 .carPlate {
   font-weight: bold;
   color: inherit;
-
 }
 
 .carDriver {
@@ -237,7 +237,7 @@
 }
 
 .carItem.selected .carStatus {
-  color:rgb(255, 204, 238);
+  color: rgb(255, 204, 238);
 }
 
 /* ✅ Нет машин */
@@ -251,7 +251,9 @@
 }
 
 /* ✅ Состояния загрузки и ошибок */
-.loading, .error, .noData {
+.loading,
+.error,
+.noData {
   padding: 1rem;
   text-align: center;
   border-radius: 4px;
@@ -272,47 +274,187 @@
   background: #fff3cd;
   color: #856404;
 }
+/* ✅ Стили для блока PDF чертежей */
+.pdfSection {
+  /* margin-top: 1rem; */
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  width: 100%;
+}
+
+.pdfSection h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 0.5rem;
+}
+
+.pdfSection h5 {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.pdfList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.pdfItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  background: #f8f9fa;
+}
+
+.pdfInfo {
+  flex: 1;
+}
+
+.pdfName {
+  font-weight: 600;
+  color: #333;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.pdfSize {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.pdfActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pdfButton {
+  padding: 0.5rem 1rem;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.pdfButton:hover {
+  background: #5a6268;
+}
+
+.noDrawings {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+
+/* ✅ Стили для предпросмотра PDF */
+.pdfPreview {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.pdfPreview h5 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.pdfViewer {
+  width: 100%;
+  height: 400px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
 
 /* ✅ Адаптивность */
 @media (max-width: 768px) {
+  .pdfItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .pdfActions {
+    align-self: flex-end;
+  }
+
+  .pdfViewer {
+    height: 300px;
+  }
   .eventDetailsContainer {
     padding: 10px;
   }
-  
+
   .header {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
   }
-  
+
   .content {
     flex-direction: column;
   }
-  
+
   .leftPanel,
   .rightPanel {
     min-width: 100%;
   }
-  
+
   .eventInfoCard,
   .carDetailsCard {
     padding: 1rem;
   }
-  
+
   .carsContainer {
     padding: 1rem;
   }
-  
+
   .eventDetails,
   .carInfo {
     grid-template-columns: 1fr;
   }
-  
+
   .photosGrid {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   }
-  
+
   .carPhoto {
     height: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pdfSection {
+    padding: 1rem;
+  }
+  
+  .pdfItem {
+    padding: 0.75rem;
+  }
+  
+  .pdfViewer {
+    height: 250px;
+  }
+  
+  .pdfButton {
+    padding: 0.5rem;
+    font-size: 0.8rem;
   }
 }

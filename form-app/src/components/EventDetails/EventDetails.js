@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './EventDetails.module.css';
 
 function EventDetails() {
   const { eventId } = useParams();
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
   
   const [event, setEvent] = useState(null);
@@ -71,7 +73,6 @@ function EventDetails() {
     return new Date(dateString).toLocaleDateString('ru-RU');
   };
 
-
   // ✅ Функция получения текста статуса машины
   const getStatusText = (status) => {
     switch (status) {
@@ -98,6 +99,28 @@ function EventDetails() {
       default:
         return styles.statusDefault;
     }
+  };
+
+  // ✅ Функция открытия PDF в новой вкладке
+  const openPdf = (pdfName) => {
+    // ✅ Жёстко прописанные пути к PDF
+    const pdfUrl = `/pdfs/${pdfName}`;
+    
+    // Открываем в новой вкладке
+    window.open(pdfUrl, '_blank');
+  };
+
+  // ✅ Функция скачивания PDF
+  const downloadPdf = (pdfName) => {
+    const pdfUrl = `/pdfs/${pdfName}`;
+    
+    // Создаём ссылку для скачивания
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.download = pdfName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (loading) return <div className={styles.loading}>Загрузка мероприятия...</div>;
@@ -149,11 +172,7 @@ function EventDetails() {
           {/* Информация о выбранной машине */}
           {selectedCar && (
             <div className={styles.carDetailsCard}>
-             
-              
               <div className={styles.carInfo}>
-                
-                
                 {/* Фотографии машины */}
                 {selectedCar.photos && selectedCar.photos.length > 0 && (
                   <div className={styles.carPhotos}>
@@ -205,6 +224,70 @@ function EventDetails() {
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* ✅ Блок с чертежами PDF - ЖЁСТКО ПРОПИСАННЫЕ ФАЙЛЫ */}
+      <div className={styles.pdfSection}>
+        <h3>Чертежи PDF</h3>
+        
+        <div className={styles.pdfList}>
+          {/* ✅ Жёстко прописанные PDF файлы для всех мероприятий */}
+          <div className={styles.pdfItem}>
+            <div className={styles.pdfInfo}>
+              <span className={styles.pdfName}>Чертёж 1</span>
+              <span className={styles.pdfSize}>1.2 MB</span>
+            </div>
+            
+            <div className={styles.pdfActions}>
+              <button 
+                onClick={() => openPdf('1.pdf')}
+                className={styles.pdfButton}
+              >
+                👁️ Открыть
+              </button>
+              
+              <button 
+                onClick={() => downloadPdf('1.pdf')}
+                className={styles.pdfButton}
+              >
+                📥 Скачать
+              </button>
+            </div>
+          </div>
+          
+          <div className={styles.pdfItem}>
+            <div className={styles.pdfInfo}>
+              <span className={styles.pdfName}>Чертёж 2</span>
+              <span className={styles.pdfSize}>2.5 MB</span>
+            </div>
+            
+            <div className={styles.pdfActions}>
+              <button 
+                onClick={() => openPdf('2.pdf')}
+                className={styles.pdfButton}
+              >
+                👁️ Открыть
+              </button>
+              
+              <button 
+                onClick={() => downloadPdf('2.pdf')}
+                className={styles.pdfButton}
+              >
+                📥 Скачать
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {/* ✅ Предпросмотр первого PDF */}
+        <div className={styles.pdfPreview}>
+          <h4>Предпросмотр чертежа:</h4>
+          <iframe 
+            src="/pdfs/1.pdf" 
+            className={styles.pdfViewer}
+            title="Предпросмотр чертежа 1"
+          />
         </div>
       </div>
     </div>

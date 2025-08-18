@@ -1,8 +1,8 @@
-const https = require('https');
+const fs = require('fs');
+const path = require('path');
 
 const getEventsList = async (req, res) => {
   try {
-    // Получаем токен из заголовка Authorization
     const authHeader = req.headers['authorization'];
     const token = authHeader?.split(' ')[1];
     
@@ -13,7 +13,7 @@ const getEventsList = async (req, res) => {
     console.log('=== Получаем список мероприятий ===');
     console.log('Token:', token ? 'присутствует' : 'отсутствует');
 
-    // Делаем запрос к внешнему серверу 1С
+    // Делаем запрос к внешнему серверу
     const externalUrl = `https://1c.mf-group.com/b24adapter/hs/inc_query/get_user_events/${token}`;
     
     // Игнорируем SSL ошибки (только для тестирования)
@@ -31,72 +31,82 @@ const getEventsList = async (req, res) => {
 
     console.log('Статус ответа от 1С:', response.status);
 
-    if (!response.ok) {
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Успешный ответ от 1С:', JSON.stringify(data, null, 2));
+
+      // ✅ Сканируем папку pdfs и добавляем файлы
+      const pdfsDir = path.join(__dirname, '../../form-app/public/pdfs');
+      let drawings = [];
+      
+      try {
+        if (fs.existsSync(pdfsDir)) {
+          const files = fs.readdirSync(pdfsDir);
+          drawings = files
+            .filter(file => file.endsWith('.pdf'))
+            .map(file => ({
+              name: file.replace('.pdf', ''), // Убираем .pdf из имени
+              fileName: file, // Полное имя файла
+              size: getFileSize(path.join(pdfsDir, file)) // Размер файла
+            }));
+        }
+      } catch (err) {
+        console.error('Ошибка сканирования папки pdfs:', err);
+        drawings = []; // Если ошибка - возвращаем пустой массив
+      }
+
+      // ✅ Добавляем чертежи ко всем мероприятиям
+      const enrichedData = {
+        ...data,
+        grouped: {
+          ...data.grouped,
+          past: data.grouped?.past?.map(event => ({
+            ...event,
+            drawings: drawings // ✅ Добавляем чертежи
+          })) || [],
+          current: data.grouped?.current?.map(event => ({
+            ...event,
+            drawings: drawings // ✅ Добавляем чертежи
+          })) || [],
+          future: data.grouped?.future?.map(event => ({
+            ...event,
+            drawings: drawings // ✅ Добавляем чертежи
+          })) || []
+        }
+      };
+
+      res.json(enrichedData);
+    } else {
       const errorText = await response.text();
       console.error('Ошибка от внешнего сервера:', errorText);
-      return res.status(response.status).json({ 
-        error: `Ошибка от внешнего сервера: ${response.status}`,
-        details: errorText
+      res.status(response.status).json({
+        message: 'Ошибка от внешнего сервера',
+        status: response.status,
+        details: errorText,
       });
     }
-
-    const rawData = await response.json();
-    console.log('Получены сырые данные от 1С:', JSON.stringify(rawData, null, 2));
-
-    // ✅ Проверяем, что rawData - массив
-    let eventsArray = [];
-    if (Array.isArray(rawData)) {
-      // Если rawData уже массив
-      eventsArray = rawData;
-    } else if (rawData && typeof rawData === 'object' && rawData.events) {
-      // Если rawData объект с полем events
-      eventsArray = Array.isArray(rawData.events) ? rawData.events : [];
-    } else {
-      // Если rawData - объект, преобразуем в массив
-      eventsArray = [rawData];
-    }
-
-    // ✅ Обрабатываем данные и группируем по актуальности
-    const processedEvents = eventsArray.map((event, index) => ({
-      id: event.id || index,
-      dateBegin: event.dateBegin,
-      dateEnd: event.dateEnd,
-      location: event.location,
-      name: event.name,
-      debt: event.debt || 0,
-      relevance: event.relevance || 'current', // 'past', 'current', 'future'
-      goods: event.goods || '',
-      weight: event.weight || 0,
-      comment: event.comment || '',
-      region: event.region || '',
-      address1: event.address1 || '',
-      address2: event.address2 || '',
-      customer: event.customer || '',
-      organization: event.organization || ''
-    }));
-
-    // ✅ Группируем по типам актуальности
-    const groupedEvents = {
-      past: processedEvents.filter(event => event.relevance === 'past'),
-      current: processedEvents.filter(event => event.relevance === 'current'),
-      future: processedEvents.filter(event => event.relevance === 'future')
-    };
-
-    console.log('Сгруппированы мероприятия:');
-    console.log('- Прошлые:', groupedEvents.past.length);
-    console.log('- Текущие:', groupedEvents.current.length);
-    console.log('- Будущие:', groupedEvents.future.length);
-
-    res.json({ 
-      events: processedEvents,
-      grouped: groupedEvents
-    });
   } catch (error) {
-    console.error('❌ Ошибка при получении списка мероприятий:', error);
-    res.status(500).json({ 
-      error: 'Ошибка сервера', 
-      details: error.message 
+    console.error('Ошибка сервера:', error);
+    res.status(500).json({
+      message: 'Ошибка сервера',
+      error: error.message,
     });
+  }
+};
+
+// ✅ Функция получения размера файла
+const getFileSize = (filePath) => {
+  try {
+    const stats = fs.statSync(filePath);
+    const bytes = stats.size;
+    
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  } catch (err) {
+    return 'Размер неизвестен';
   }
 };
 
