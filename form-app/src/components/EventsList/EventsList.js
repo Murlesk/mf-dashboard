@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from 'react-router-dom';
 import styles from "./EventsList.module.css";
 
 function EventsList() {
-  const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [events, setEvents] = useState({
     past: [],
     current: [],
@@ -22,54 +22,49 @@ function EventsList() {
   const [showOnlyDebt, setShowOnlyDebt] = useState(false);
 
   // Получаем мероприятия
-  useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("Токен не найден");
-        }
-
-        const response = await fetch("http://localhost:5000/api/events/list", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          setEvents(
-            data.grouped || {
-              past:
-                data.events?.filter((event) => event.relevance === "past") ||
-                [],
-              current:
-                data.events?.filter((event) => event.relevance === "current") ||
-                [],
-              future:
-                data.events?.filter((event) => event.relevance === "future") ||
-                [],
-            }
-          );
-        } else {
-          throw new Error(data.message || "Ошибка загрузки мероприятий");
-        }
-      } catch (err) {
-        console.error("Ошибка при загрузке мероприятий:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
+useEffect(() => {
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Токен не найден');
       }
-    };
 
-    fetchEvents();
-  }, []);
+      const response = await fetch('http://localhost:5000/api/events/list', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // ✅ Сохраняем данные в localStorage для использования в EventDetails
+        localStorage.setItem('eventsData', JSON.stringify(data));
+        
+        setEvents(data.grouped || {
+          past: data.events?.filter(event => event.relevance === 'past') || [],
+          current: data.events?.filter(event => event.relevance === 'current') || [],
+          future: data.events?.filter(event => event.relevance === 'future') || []
+        });
+      } else {
+        throw new Error(data.message || 'Ошибка загрузки мероприятий');
+      }
+    } catch (err) {
+      console.error('Ошибка при загрузке мероприятий:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchEvents();
+}, []);
 
   // ✅ Фильтруем мероприятия
   const filteredEvents = {
@@ -189,12 +184,17 @@ function EventsList() {
           {/* ✅ Всегда открыты - убрана возможность сворачивания */}
           <div className={styles.eventsList}>
             {filteredEvents.current.length > 0 ? (
-              filteredEvents.current.map((event, index) => (
-                <div key={event.id || index} className={styles.eventCard}>
-                  <h5 className={styles.eventName}>{event.name}</h5>
-
-                  {/* ✅ Показываем задолженность красным если есть */}
-                  {event.debt !== undefined &&
+  filteredEvents.current.map((event, index) => (
+    <div 
+      key={event.id || index} 
+      className={styles.eventCard}
+      onClick={() => navigate(`/events/${event.id}`)} // ✅ Добавляем навигацию
+      style={{ cursor: 'pointer' }} // ✅ Показываем, что кликабельно
+    >
+      <h5 className={styles.eventName}>{event.name}</h5>
+      
+      {/* ✅ Показываем задолженность красным если есть */}
+      {event.debt !== undefined &&
                     event.debt !== null &&
                     event.debt > 0 && (
                       <div className={styles.debtBadge}>
@@ -205,29 +205,17 @@ function EventsList() {
                             maximumFractionDigits: 2,
                           })}
                         </strong>
-                      </div>
-                    )}
-
-                  <p>
-                    <strong>Дата начала:</strong>{" "}
-                    {new Date(event.dateBegin).toLocaleDateString("ru-RU")}
-                  </p>
-                  <p>
-                    <strong>Дата окончания:</strong>{" "}
-                    {new Date(event.dateEnd).toLocaleDateString("ru-RU")}
-                  </p>
-                  <p>
-                    <strong>Место:</strong> {event.location}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p className={styles.noEvents}>
-                {showOnlyDebt
-                  ? "Нет текущих мероприятий с задолженностью"
-                  : "Нет текущих мероприятий"}
-              </p>
-            )}
+        </div>
+      )}
+      
+      <p><strong>Дата начала:</strong> {formatDate(event.dateBegin)}</p>
+      <p><strong>Дата окончания:</strong> {formatDate(event.dateEnd)}</p>
+      <p><strong>Место:</strong> {event.location}</p>
+    </div>
+  ))
+) : (
+  <p className={styles.noEvents}>Нет текущих мероприятий</p>
+)}
           </div>
         </div>
 
@@ -241,7 +229,12 @@ function EventsList() {
           <div className={styles.eventsList}>
             {filteredEvents.future.length > 0 ? (
               filteredEvents.future.map((event, index) => (
-                <div key={event.id || index} className={styles.eventCard}>
+                <div 
+  key={event.id || index} 
+  className={styles.eventCard}
+  onClick={() => navigate(`/events/${event.id}`)} // ✅ Правильный путь
+  style={{ cursor: 'pointer' }}
+>
                   <h5 className={styles.eventName}>{event.name}</h5>
 
                   {/* ✅ Показываем задолженность красным если есть */}
@@ -299,7 +292,11 @@ function EventsList() {
           <div className={styles.eventsList}>
             {filteredEvents.past.length > 0 ? (
               filteredEvents.past.map((event, index) => (
-                <div key={event.id || index} className={styles.eventCard}>
+                <div key={event.id || index} 
+  className={styles.eventCard}
+  onClick={() => navigate(`/events/${event.id}`)} // ✅ Правильный путь
+  style={{ cursor: 'pointer' }}
+>
                   <h5 className={styles.eventName}>{event.name}</h5>
 
                   {/* ✅ Показываем задолженность красным если есть */}

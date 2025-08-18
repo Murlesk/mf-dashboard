@@ -11,6 +11,7 @@ const orderFormRoutes = require('./routes/orderForm');
 const userRoutes = require('./routes/user');
 const eventsRoutes = require('./routes/events');
 
+
 const app = express();
 
 // ✅ Исправленная CORS конфигурация (добавлена запятая)
@@ -71,6 +72,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/lead', leadFormRoutes);
 app.use('/api/order', orderFormRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/events', eventsRoutes);
 app.use('/api/events', eventsRoutes);
 
 // Защищенный тестовый роут

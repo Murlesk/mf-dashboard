@@ -12,6 +12,7 @@ import Dashboard from "./components/Dashboard/Dashboard";
 import AdminPage from "./components/Admin/AdminPage";
 import LeadForm from "./components/LeadForm/LeadForm";
 import OrderForm from "./components/OrderForm/OrderForm";
+import EventDetails from './components/EventDetails/EventDetails';
 import styles from "./App.module.css";
 
 // Выносим PrivateRoute в отдельный компонент
@@ -102,6 +103,14 @@ function AppContent() {
             }
           />
           <Route path="*" element={<Navigate to="/" />} />
+          <Route
+  path="/events/:eventId"
+  element={
+    <PrivateRoute>
+      <EventDetails />
+    </PrivateRoute>
+  }
+/>
         </Routes>
       </main>
     </div>

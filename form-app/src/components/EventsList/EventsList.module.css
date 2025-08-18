@@ -258,8 +258,104 @@ padding: 1rem;
   background: white;
 }
 
+/* ✅ Стили для статусов машин */
+.carStatuses {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.carStatuses h6 {
+  margin: 0 0 0.5rem 0;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.statusList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.statusItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  border: 1px solid #e9ecef;
+}
+
+.carName {
+  font-weight: 500;
+  color: #333;
+}
+
+.statusText {
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+/* ✅ Стили для разных статусов */
+.statusLoading {
+  background-color: #fff3cd;
+  border-color: #ffeaa7;
+}
+
+.statusLoading .statusText {
+  background-color: #ffd43b;
+  color: #856404;
+}
+
+.statusChecking {
+  background-color: #d1ecf1;
+  border-color: #b8daff;
+}
+
+.statusChecking .statusText {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.statusSent {
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+.statusSent .statusText {
+  background-color: #28a745;
+  color: white;
+}
+
+.statusDefault {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+.statusDefault .statusText {
+  background-color: #6c757d;
+  color: white;
+}
+
 /* Адаптивность */
 @media (max-width: 768px) {
+  .statusItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .carName,
+  .statusText {
+    width: 100%;
+  }
+  
+  .statusText {
+    text-align: center;
+  }
   .currentFutureContainer {
     flex-direction: column;
   }

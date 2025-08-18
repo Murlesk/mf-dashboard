@@ -1,0 +1,318 @@
+.eventDetailsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 20px;
+  background-color: #f4f4f4;
+  min-height: 80vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.backButton {
+  padding: 0.5rem 1rem;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.backButton:hover {
+  background: #5a6268;
+}
+
+.content {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+/* ✅ Левая панель */
+.leftPanel {
+  flex: 2;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ✅ Карточка мероприятия */
+.eventInfoCard {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+}
+
+.eventName {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 0.5rem;
+}
+
+.debtBadge {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  border: 1px solid #f5c6cb;
+}
+
+.eventDetails {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.eventDetails p {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border-left: 3px solid var(--primary-color);
+}
+
+/* ✅ Карточка машины */
+.carDetailsCard {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+}
+
+.carDetailsCard h3 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 0.5rem;
+}
+
+.carInfo {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.carInfo p {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+  border-left: 3px solid #28a745;
+}
+
+/* ✅ Фотографии машины */
+.carPhotos {
+  grid-column: 1 / -1;
+
+}
+
+.carPhotos h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.photosGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.carPhoto {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+/* ✅ Правая панель */
+.rightPanel {
+  flex: 1;
+  min-width: 250px;
+}
+
+.carsContainer {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  height: fit-content;
+}
+
+.carsContainer h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 0.5rem;
+}
+
+/* ✅ Список машин */
+.carsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 550px;
+  overflow-y: auto;
+}
+
+.carItem {
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f8f9fa;
+}
+
+.carItem:hover {
+  background: #e9ecef;
+  border-color: var(--primary-hover);
+}
+
+.carItem.selected {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-hover);
+}
+
+.carHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.carName {
+  margin: 0;
+  font-size: 1.1rem;
+  color: inherit;
+}
+
+.carPlate {
+  font-weight: bold;
+  color: inherit;
+
+}
+
+.carDriver {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.carItem.selected .carDriver {
+  color: #e9ecef;
+}
+
+.carStatus {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.8rem;
+  color: #888;
+  font-style: italic;
+}
+
+.carItem.selected .carStatus {
+  color:rgb(255, 204, 238);
+}
+
+/* ✅ Нет машин */
+.noCars {
+  text-align: center;
+  padding: 1rem;
+  color: #6c757d;
+  font-style: italic;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+/* ✅ Состояния загрузки и ошибок */
+.loading, .error, .noData {
+  padding: 1rem;
+  text-align: center;
+  border-radius: 4px;
+  margin: 2rem;
+}
+
+.loading {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.error {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.noData {
+  background: #fff3cd;
+  color: #856404;
+}
+
+/* ✅ Адаптивность */
+@media (max-width: 768px) {
+  .eventDetailsContainer {
+    padding: 10px;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .content {
+    flex-direction: column;
+  }
+  
+  .leftPanel,
+  .rightPanel {
+    min-width: 100%;
+  }
+  
+  .eventInfoCard,
+  .carDetailsCard {
+    padding: 1rem;
+  }
+  
+  .carsContainer {
+    padding: 1rem;
+  }
+  
+  .eventDetails,
+  .carInfo {
+    grid-template-columns: 1fr;
+  }
+  
+  .photosGrid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+  
+  .carPhoto {
+    height: 100px;
+  }
+}
