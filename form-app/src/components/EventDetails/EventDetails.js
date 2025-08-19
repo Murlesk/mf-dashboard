@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
 import styles from './EventDetails.module.css';
 
 function EventDetails() {
   const { eventId } = useParams();
-  const { currentUser } = useAuth();
-  const navigate = useNavigate();
-  
+  const navigate = useNavigate();  
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -101,12 +98,70 @@ function EventDetails() {
     }
   };
 
+    const [photosData, setPhotosData] = useState({}); // Храним загруженные Base64 фото
+    const [modalPhoto, setModalPhoto] = useState(null); // Храним фото для модалки
+
+    // Функция для открытия модального окна
+  const openPhotoModal = (photoId) => {
+    setModalPhoto(photosData[photoId]);
+  };
+
+  // Закрытие модалки по ESC
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setModalPhoto(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // ✅ Функция для загрузки и кэширования фото
+  const loadPhoto = async (photoId) => {
+    // Если фото уже загружено - возвращаем его
+    if (photosData[photoId]) return photosData[photoId];
+    
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Токен не найден');
+      return null;
+    }
+    
+    try {
+      const response = await fetch(
+        `https://1c.mf-group.com/b24adapter/hs/inc_query/get_file/${token}/${photoId}`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`Ошибка HTTP: ${response.status}`);
+      }
+      
+      const base64Data = await response.text();
+      const fullBase64 = `data:image/jpeg;base64,${base64Data}`;
+      
+      // Сохраняем в состоянии
+      setPhotosData(prev => ({ ...prev, [photoId]: fullBase64 }));
+      
+      return fullBase64;
+    } catch (error) {
+      console.error('Ошибка загрузки фото:', error);
+      return null;
+    }
+  };
+
+  // ✅ Эффект для предзагрузки фото при выборе машины
+  useEffect(() => {
+    if (selectedCar?.photos) {
+      selectedCar.photos.forEach(photo => {
+        loadPhoto(photo.id);
+      });
+    }
+  }, [selectedCar]);
   // ✅ Функция открытия PDF в новой вкладке
   const openPdf = (pdfName) => {
-    // ✅ Жёстко прописанные пути к PDF
     const pdfUrl = `/pdfs/${pdfName}`;
-    
-    // Открываем в новой вкладке
     window.open(pdfUrl, '_blank');
   };
 
@@ -114,7 +169,6 @@ function EventDetails() {
   const downloadPdf = (pdfName) => {
     const pdfUrl = `/pdfs/${pdfName}`;
     
-    // Создаём ссылку для скачивания
     const link = document.createElement('a');
     link.href = pdfUrl;
     link.download = pdfName;
@@ -169,29 +223,50 @@ function EventDetails() {
             </div>
           </div>
 
-          {/* Информация о выбранной машине */}
-          {selectedCar && (
-            <div className={styles.carDetailsCard}>
-              <div className={styles.carInfo}>
-                {/* Фотографии машины */}
-                {selectedCar.photos && selectedCar.photos.length > 0 && (
-                  <div className={styles.carPhotos}>
-                    <h4>Фотографии:</h4>
-                    <div className={styles.photosGrid}>
-                      {selectedCar.photos.map((photo, index) => (
-                        <img 
-                          key={index}
-                          src={`data:image/jpeg;base64,${photo}`} 
-                          alt={`Фото машины ${index + 1}`}
-                          className={styles.carPhoto}
-                        />
-                      ))}
-                    </div>
+          {/* Блок с фотографиями машины */}
+      {selectedCar && selectedCar.photos && selectedCar.photos.length > 0 && (
+        <div className={styles.carPhotos}>
+          <h4>Фотографии:</h4>
+          <div className={styles.photosGrid}>
+            {selectedCar.photos.map((photo, index) => (
+              <div key={index} className={styles.photoWrapper}>
+                {photosData[photo.id] ? (
+                  <div 
+                    className={styles.photoThumbnail}
+                    onClick={() => openPhotoModal(photo.id)}
+                  >
+                    <img 
+                      src={photosData[photo.id]}
+                      alt={`Фото машины ${index + 1}`}
+                      className={styles.carPhoto}
+                    />
                   </div>
+                ) : (
+                  <div className={styles.photoLoading}>Загрузка...</div>
                 )}
+                <div className={styles.photoName}>{photo.name}</div>
               </div>
-            </div>
-          )}
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Модальное окно для просмотра фото */}
+      {modalPhoto && (
+        <div 
+          className={styles.photoModalOverlay}
+          onClick={() => setModalPhoto(null)}
+        >
+          <div className={styles.photoModalContent}>
+            <img
+              src={modalPhoto}
+              alt="Увеличенное фото"
+              className={styles.modalPhoto}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
         </div>
 
         {/* Правая панель - список машин */}
